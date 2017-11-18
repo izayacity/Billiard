@@ -62,9 +62,10 @@ public class Controller : MonoBehaviour {
             }
             else if (state == 2) {
                 clickTime = Time.time;
+                state = 3;
             }
         }
-        if (state == 2 && Input.GetMouseButtonUp(0)) {
+        if (state == 3 && Input.GetMouseButtonUp(0)) {
             elipse = Time.time - clickTime;
             ball.force(elipse * force, -forceAngle);
 

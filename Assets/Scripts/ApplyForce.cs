@@ -8,7 +8,6 @@ public class ApplyForce : MonoBehaviour {
     private Vector3 norm;
     private float acceleration;
 
-
     public void force(float force, Vector3 forceAngle) {
         norm = forceAngle;
         acceleration = force;
@@ -20,7 +19,7 @@ public class ApplyForce : MonoBehaviour {
         if (acceleration >= 0) {
             movement = norm * acceleration;
             gameObject.transform.position += movement;
-            acceleration -= 0.3f;
+            acceleration -= 0.5f;
             Debug.Log("Acceleration: " + acceleration);
         }        
     }
