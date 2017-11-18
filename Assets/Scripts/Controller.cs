@@ -14,10 +14,16 @@ public class Controller : MonoBehaviour {
 
     public GameObject head;
     public GameObject end;
+    public ApplyForce ball;
+    public float force;
+
     private int state;
     private float clickTime;
     private float elipse;
     private float length;
+    private float angle;
+    private Vector3 forceAngle;
+
     private const float PI = 3.14f;
     Vector3 prevPos;
 
@@ -25,6 +31,7 @@ public class Controller : MonoBehaviour {
 
         state = 0;
         length = 5;
+        end.SetActive(false);
 
         if (System.Object.ReferenceEquals(head, null)) {
             head = gameObject.transform.GetChild(0).Find("Head").gameObject;
@@ -43,12 +50,15 @@ public class Controller : MonoBehaviour {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
             if (state == 0) {
-                state = 1;               
+                state = 1;
                 changePosition(mousePos);
+                head.SetActive(false);
+                end.SetActive(true);
             }
             else if (state == 1) {
                 state = 2;
                 changeRotation(mousePos);
+                end.SetActive(false);
             }
             else if (state == 2) {
                 clickTime = Time.time;
@@ -56,7 +66,10 @@ public class Controller : MonoBehaviour {
         }
         if (state == 2 && Input.GetMouseButtonUp(0)) {
             elipse = Time.time - clickTime;
-            //Debug.Log(elipse);
+            ball.force(elipse * force, -forceAngle);
+
+            state = 0;
+            head.SetActive(true);
         }
     }
 
@@ -66,12 +79,17 @@ public class Controller : MonoBehaviour {
     }
 
     // TODO: Test other axises
+    // end position is the mouse position
     void changeRotation(Vector3 endPos) {
+        Debug.Log(endPos);
         prevPos = head.transform.position;
-        float angle = Mathf.Atan(Mathf.Abs(endPos.x - head.transform.position.x) / Mathf.Abs(endPos.z - head.transform.position.z)) / PI * 180;
-        transform.Rotate(0, -angle, 0);
-        float vertical =  length / 2 * (1 - Mathf.Cos(angle));
-        float horizental = length / 2 * Mathf.Sin(angle);
+        float hor = endPos.x - head.transform.position.x;
+        float ver = endPos.z - head.transform.position.z;
+        angle = Mathf.Atan(hor / ver);
+        forceAngle = new Vector3(hor, 0, ver);
+        Vector3.Normalize(forceAngle);
+        float rotateAngle = angle / PI * 180;
+        transform.Rotate(0, rotateAngle, 0);
         transform.Translate(prevPos.x - head.transform.position.x, 0, head.transform.position.z - prevPos.z);
     }
 }
